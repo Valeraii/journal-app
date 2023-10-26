@@ -12,7 +12,7 @@ const HomeScreen = () => {
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
             if (user) {
-                navigation.navigate("Index")
+                navigation.replace("Index")
             }
         })
         return unsubscribe
