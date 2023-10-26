@@ -49,7 +49,7 @@ const HomeScreen = () => {
             value={password} 
             onChangeText={text => setPassword(text)}
             />
-          <TouchableOpacity onPress={handleLogin}>
+          <TouchableOpacity style={styles.signInButton} onPress={handleLogin}>
             <Text style={styles.signinText}>SIGN IN</Text>
           </TouchableOpacity>
           <Text style={styles.text}>Don't have an account?</Text>

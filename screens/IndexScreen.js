@@ -1,13 +1,15 @@
-import {useState, React} from 'react'
+import {useState, React, useEffect} from 'react'
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
 import { useNavigation } from '@react-navigation/core'
 import moment from 'moment';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { collection, addDoc } from 'firebase/firestore';
+import firebase from '@firebase/app-compat';
 
 const IndexScreen = () => {
   const navigation = useNavigation()
+  const userID = auth.currentUser?.uid
+
   const [currDate, setCurrDate] = useState('')
   const [q1a1, setQ1a1] = useState('')
   const [q1a2, setQ1a2] = useState('')
@@ -27,24 +29,48 @@ const IndexScreen = () => {
   let leftArrow = '<'
   let rightArrow = '>'
 
+  const ref = firebase.firestore().collection(userID)
+
+  useEffect(() => {
+    const unsubscribe = ref.get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        setQ1a1(doc.data().q1a1)
+        setQ1a2(doc.data().q1a2)
+        setQ1a3(doc.data().q1a3)
+        setQ2a1(doc.data().q2a1)
+        setQ2a2(doc.data().q2a2)
+        setQ2a3(doc.data().q2a3)
+        setQ3a1(doc.data().q3a1)
+        setQ3a2(doc.data().q3a2)
+        setQ3a3(doc.data().q3a3)
+        setQ4a1(doc.data().q4a1)
+      })
+    })
+    return unsubscribe
+  }, [])
+
   const handleSignout = () => {
     auth.signOut()
     .then(() => {
-      navigation.replace("Home")
+      navigation.navigate("Home")
     })
     .catch(error => alert(error.message))
   }
 
-  const handleSave = () => {
-    try{
-      const docRef = await addDoc(collection(db, "entries"),{
-        q1a1: q1a1,
-        q1a2: q1a2,
-        q1a3: q1a3,
-      });
-    } catch(e) {
-      console.log("Error adding entry", e);
-    }
+  async function handleSave() {
+    await ref.doc(day).set({
+      date: day,
+      q1a1: q1a1,
+      q1a2: q1a2,
+      q1a3: q1a3,
+      q2a1: q2a1,
+      q2a2: q2a2,
+      q2a3: q2a3,
+      q3a1: q3a1,
+      q3a2: q3a2,
+      q3a3: q3a3,
+      q4a1: q4a1
+    })
   }
 
   return (
@@ -144,7 +170,7 @@ const IndexScreen = () => {
             </View>
 
             <View style={styles.saveWrapper}>
-              <TouchableOpacity style={styles.saveButton} onPress={handleSave()}>
+              <TouchableOpacity style={styles.saveButton} onPress={() => handleSave()}>
                 <Text style={styles.saveText}>Save</Text>
               </TouchableOpacity>
             </View>
