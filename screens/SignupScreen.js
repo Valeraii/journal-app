@@ -1,12 +1,14 @@
 import { useNavigation } from '@react-navigation/core'
 import {useState, react, useEffect} from "react";
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { StyleSheet, Text, ImageBackground, View, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import {auth} from "../firebase"
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 function SignupScreen() {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const navigation = useNavigation()
 
     {/* If there is user, navigate to index screen */}
     useEffect(() => {
@@ -28,8 +30,18 @@ function SignupScreen() {
             .catch(error => alert(error.message))
     }
 
+    const handleBack = () => {
+        navigation.navigate("Home")
+    }
+
     return (
         <View style={styles.container}>
+            <ImageBackground style={styles.bg} source={require('../assets/bg.jpg')}>
+
+            <TouchableOpacity onPress={handleBack}>
+            <Ionicons style={styles.backIcon} name="arrow-back-outline" size={32} onPress={handleBack}/>
+            </TouchableOpacity>
+
             {/* Displays page name */}
             <View style={styles.titleWrapper}>
                 <Text style={styles.title}>Sign Up</Text>
@@ -58,6 +70,7 @@ function SignupScreen() {
                     <Text style={styles.signup}>SIGN UP</Text>
                 </TouchableOpacity>
             </View>
+            </ImageBackground>
         </View>
     )
 }
@@ -69,6 +82,13 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#E8EAED',
     },
+    bg: {
+        resizeMode: 'cover',
+        height: '100vh'
+    },
+    backIcon : {
+        padding: 20,
+    },
     titleWrapper: {
         paddingTop: 150,
         flexDirection: 'column',
@@ -76,9 +96,10 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     title: {
-        fontSize: 36,
+        fontSize: 48,
         fontWeight: 'bold',
-        paddingBottom: 20
+        paddingBottom: 20,
+        fontFamily: 'notoserif',
     },
     signupWrapper: {
         paddingTop: 20,

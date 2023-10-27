@@ -1,5 +1,5 @@
 import {useState, React, useEffect, useCallback} from 'react'
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, ImageBackground } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, ImageBackground, Modal, Pressable } from 'react-native';
 import { auth, db } from '../firebase';
 import { useNavigation } from '@react-navigation/core'
 import moment from 'moment';
@@ -15,6 +15,10 @@ const IndexScreen = () => {
 
   const [currDate, setCurrDate] = useState(moment().format('D'))
   const [currMonth, setCurrMonth] = useState(moment().format('MMMM'))
+  const [highestStreak, setHighestStreak] = useState()
+  const [currentStreak, setCurrentStreak] = useState()
+
+  const [modalVisible, setModalVisible] = useState(false)
 
   {/* Holds users answers */}
   const [q1a1, setQ1a1] = useState('')
@@ -100,6 +104,28 @@ const IndexScreen = () => {
       setCurrMonth(moment(month).subtract(1, "month").format('MMMM'))
     }
     fetchData()
+  }
+
+  {/* Get highest streak */}
+  function getHighestStreak() {
+    ref.get().then((querySnapshot) => {
+      if(querySnapshot.size > 0) {
+        let data = querySnapshot.docs.map((doc) => ({id: doc.id}));
+        let chunks = []
+        let prev = undefined
+        data.forEach((current) => {
+          if(prev === undefined || current.id - prev != 1) {
+            chunks.push([])
+          }
+          chunks[chunks.length - 1].push(current.id)
+          prev=current.id
+        })
+        chunks.sort((a, b) => b.length - a.length);
+        setHighestStreak(chunks[0].length)
+      } else {
+        setHighestStreak(0);
+      }
+    })
   }
 
   {/* Fetches user responses from the DB */}
@@ -211,12 +237,35 @@ const IndexScreen = () => {
   return (
     <ScrollView>
     <View style={styles.container}>
+      {/* Options modal */}
+      <Modal 
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible)
+        }}
+      >
+        <View style={styles.modalWrapper}>
+          <View style={styles.modal}>
+            <Pressable
+              onPress={() => {
+                setModalVisible(!modalVisible)
+              }}
+            >
+              <Text style={styles.close}>x</Text>
+            </Pressable>
+            <Text style={styles.modalText}> Longest Streak: {highestStreak}</Text>
+
+          </View>
+        </View>
+      </Modal>
+
       {/* Background image */}
       <ImageBackground style={styles.bg} source={require('../assets/bg.jpg')}>
         {/* Header containing signout and options */}
         <View style={styles.header}>
           <TouchableOpacity>
-            <Ionicons style={styles.options} name="cog-outline" size={32}/>
+            <Ionicons style={styles.options} name="cog-outline" size={32} onPress={() => {setModalVisible(true); getHighestStreak(); getCurrentStreak()}}/>
           </TouchableOpacity>
           <Ionicons style={styles.logoutIcon} name="log-out-outline" size={32} onPress={handleSignout}/>
         </View>
@@ -415,7 +464,9 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     paddingTop: 20,
     paddingRight: 50,
-    paddingLeft: 50
+    paddingLeft: 50,
+    borderWidth: 1,
+    borderColor: 'black'
   },
   journalText: {
   },
@@ -447,6 +498,31 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 16
   },
+  modalWrapper: {
+    justifyContent:'center',
+    alignItems: 'center',
+    marginTop:  50
+  },
+  modal: {
+    backgroundColor: 'white',
+    borderColor: 'black',
+    borderWidth: 1,
+    borderRadius: 20,
+    paddingBottom: 50,
+    width: '60vw'
+  },
+  modalText: {
+    paddingLeft: 15,
+    paddingTop: 15,
+    fontWeight: 'bold',
+   
+  },
+  close:{
+    paddingRight: 15,
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginLeft: 'auto'
+  }
 })
 
 

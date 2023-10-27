@@ -21,7 +21,7 @@ const HomeScreen = () => {
 
     {/* Go to SignupScreen */}
     const redirectToSignup = () => {
-        navigation.navigate("Signup")
+      navigation.navigate("Signup")
     }
 
     {/* Log in */}
@@ -101,7 +101,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         paddingBottom: 20,
         fontFamily: 'notoserif',
-        color: ''
       },
       circular: {
         width: 200,
