@@ -18,6 +18,7 @@ function SignupScreen() {
         return unsubscribe
     }, [])
 
+    {/* Sign up function */}
     const handleSignUp = () => {
         auth
             .createUserWithEmailAndPassword(email, password)
@@ -26,35 +27,39 @@ function SignupScreen() {
             })
             .catch(error => alert(error.message))
     }
-  return (
-    <View style={styles.container}>
-        <View style={styles.titleWrapper}>
-            <Text style={styles.title}>Sign Up</Text>
-        </View>
 
-         <View style={styles.signupWrapper}>
-         <TextInput style={styles.name} 
-            placeholder={'Name'} 
-            value={name} 
-            onChangeText={text => setName(text)}
-            />
-          <TextInput style={styles.email} 
-            placeholder={'Email'} 
-            value={email} 
-            onChangeText={text => setEmail(text)}
-            />
-          <TextInput style={styles.password} 
-            placeholder={'Password'} 
-            secureTextEntry={true}
-            value={password} 
-            onChangeText={text => setPassword(text)}
-            />
-          <TouchableOpacity onPress={handleSignUp}>
-            <Text style={styles.signup}>SIGN UP</Text>
-          </TouchableOpacity>
+    return (
+        <View style={styles.container}>
+            {/* Displays page name */}
+            <View style={styles.titleWrapper}>
+                <Text style={styles.title}>Sign Up</Text>
+            </View>
+
+            {/* Takes name, email and password inputs */}
+            <View style={styles.signupWrapper}>
+                <TextInput style={styles.name} 
+                    placeholder={'Name'} 
+                    value={name} 
+                    onChangeText={text => setName(text)}
+                />
+                <TextInput style={styles.email} 
+                    placeholder={'Email'} 
+                    value={email} 
+                    onChangeText={text => setEmail(text)}
+                />
+                <TextInput style={styles.password} 
+                    placeholder={'Password'} 
+                    secureTextEntry={true}
+                    value={password} 
+                    onChangeText={text => setPassword(text)}
+                />
+                {/* Sign up button */}
+                <TouchableOpacity onPress={handleSignUp}>
+                    <Text style={styles.signup}>SIGN UP</Text>
+                </TouchableOpacity>
+            </View>
         </View>
-    </View>
-  )
+    )
 }
 
 export default SignupScreen

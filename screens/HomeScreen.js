@@ -19,10 +19,12 @@ const HomeScreen = () => {
         return unsubscribe
     }, [])
 
+    {/* Go to SignupScreen */}
     const redirectToSignup = () => {
         navigation.navigate("Signup")
     }
 
+    {/* Log in */}
     const handleLogin = () => {
         auth
             .signInWithEmailAndPassword(email, password)
@@ -31,37 +33,47 @@ const HomeScreen = () => {
             })
             .catch(error => alert(error.message))
     }
+
     return (
         <View style={styles.container}>
-        <ImageBackground style={styles.bg} source={require('../assets/ocean-bg.png')}>
-        <View style={styles.logoWrapper}>
-          <Text style={styles.title}>Daily Journal</Text>
-          <View style={styles.circular}>
-            <Image style={styles.image} source={require('../assets/logo.png')}/>
-          </View>
-        </View>
+          {/* Background */}
+          <ImageBackground style={styles.bg} source={require('../assets/ocean-bg.png')}>
         
-        <View style={styles.loginWrapper}>
-          <TextInput style={styles.email} 
-            placeholder={'Email'} 
-            value={email} 
-            onChangeText={text => setEmail(text)}
-            />
-          <TextInput style={styles.password} 
-            placeholder={'Password'} 
-            secureTextEntry={true}
-            value={password} 
-            onChangeText={text => setPassword(text)}
-            />
-          <TouchableOpacity style={styles.signInButton} onPress={handleLogin}>
-            <Text style={styles.signinText}>SIGN IN</Text>
-          </TouchableOpacity>
-          <Text style={styles.text}>Don't have an account?</Text>
-          <TouchableOpacity onPress={redirectToSignup}>
-            <Text style={styles.signup}>SIGN UP</Text>
-          </TouchableOpacity>
-        </View>
-      </ImageBackground>
+            {/*Title and logo */}
+            <View style={styles.logoWrapper}>
+              <Text style={styles.title}>Daily Journal</Text>
+              <View style={styles.circular}>
+                <Image style={styles.image} source={require('../assets/logo.png')}/>
+              </View>
+            </View>
+            
+            <View style={styles.loginWrapper}>
+              {/* Email input */}
+              <TextInput style={styles.email} 
+                placeholder={'Email'} 
+                value={email} 
+                onChangeText={text => setEmail(text)}
+              />
+              {/* Password input */}
+              <TextInput style={styles.password} 
+                placeholder={'Password'} 
+                secureTextEntry={true}
+                value={password} 
+                onChangeText={text => setPassword(text)}
+              />
+              {/* Sign in button */}
+              <TouchableOpacity style={styles.signInButton} onPress={handleLogin}>
+                <Text style={styles.signinText}>SIGN IN</Text>
+              </TouchableOpacity>
+
+              {/* Sign up button */}
+              <Text style={styles.text}>Don't have an account?</Text>
+              <TouchableOpacity onPress={redirectToSignup}>
+                <Text style={styles.signup}>SIGN UP</Text>
+              </TouchableOpacity>
+            </View>
+
+        </ImageBackground>
       </View>
     )
 }

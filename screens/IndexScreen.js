@@ -10,8 +10,13 @@ const IndexScreen = () => {
   const navigation = useNavigation()
   const userID = auth.currentUser?.uid
 
+  {/* DB connection */}
+  const ref = firebase.firestore().collection(userID)
+
   const [currDate, setCurrDate] = useState(moment().format('D'))
   const [currMonth, setCurrMonth] = useState(moment().format('MMMM'))
+
+  {/* Holds users answers */}
   const [q1a1, setQ1a1] = useState('')
   const [q1a2, setQ1a2] = useState('')
   const [q1a3, setQ1a3] = useState('')
@@ -26,23 +31,22 @@ const IndexScreen = () => {
   let leftArrow = '<'
   let rightArrow = '>'
 
-  const ref = firebase.firestore().collection(userID)
-
+  {/* Fetches user response once on page load */}
   useEffect(() => {
     fetchData()
   }, [])
 
+  {/* Constantly checks if current date has been updated */}
   useEffect(() => {
     fetchData()
   }, [switchDate])
 
+  {/* Reassigns currDate depending on which date the user clicks */}
   function switchDate(date) {
-    console.log('here ' + date)
     let one = 1;
     if(date > 1 && date < moment().daysInMonth()) {
       setCurrDate(date)
     } else if (date === one.toString()) {
-      console.log("one")
       setCurrDate(one.toString())
     } else {
       setCurrDate(moment().daysInMonth().toString())
@@ -54,12 +58,12 @@ const IndexScreen = () => {
     //   setCurrMonth(moment().subtract(1, "month").format('MMMM'))
     // }
     fetchData()
-    console.log(currDate)
   }
 
+  {/* Fetches user responses from the DB */}
   const fetchData = () => {
-    console.log('fetching ' + currDate)
     ref.doc(currDate).get().then((querySnapshot) => {
+      {/* If user has responses on currDate, fetch responses */}
       if(querySnapshot.exists) { 
         setQ1a1(querySnapshot.data().q1a1)
         setQ1a2(querySnapshot.data().q1a2)
@@ -72,6 +76,7 @@ const IndexScreen = () => {
         setQ3a3(querySnapshot.data().q3a3)
         setQ4a1(querySnapshot.data().q4a1)
       } else {
+        {/* If currDate has no responses, set text inputs to blank */}
         setQ1a1('')
         setQ1a2('')
         setQ1a3('')
@@ -86,6 +91,7 @@ const IndexScreen = () => {
     })
   }
 
+  {/* Sign out */}
   const handleSignout = () => {
     auth.signOut()
     .then(() => {
@@ -94,6 +100,7 @@ const IndexScreen = () => {
     .catch(error => alert(error.message))
   }
 
+  {/* Saves user responses into DB */}
   async function handleSave() {
     await ref.doc(currDate).set({
       date: currDate,
@@ -110,10 +117,12 @@ const IndexScreen = () => {
     })
   }
 
+  {/* Getter for currMonth */}
   function getMonth() {
     return currMonth
   }
 
+  {/* Gets the following day after currDate */}
   function getNextDate() {
     let one = 1;
     if(currDate === moment().daysInMonth().toString()) {
@@ -123,6 +132,7 @@ const IndexScreen = () => {
     }
   }
 
+  {/* Gets the day following tomorrow from currDate */}
   function getNextNextDate() {   
     let one = 1;
     let two = 2;
@@ -135,6 +145,7 @@ const IndexScreen = () => {
     return (Number(currDate) + 2).toString()
   }
 
+  {/* Gets yesterday relative to currDate */}
   function getYesterday() {
     let one = 1;
     if(currDate === one.toString()) {
@@ -144,6 +155,7 @@ const IndexScreen = () => {
     }
   }
 
+  {/* Gets the day before yesterday relative to currDate */}
   function getYesterdayYesterday() {
     if(Number(currDate) - 1 === 1) {
       return moment().daysInMonth().toString()
@@ -157,7 +169,9 @@ const IndexScreen = () => {
   return (
     <ScrollView>
     <View style={styles.container}>
+      {/* Background image */}
       <ImageBackground style={styles.bg} source={require('../assets/ocean-bg.png')}>
+        {/* Header containing signout and options */}
         <View style={styles.header}>
           <TouchableOpacity>
             <Ionicons style={styles.options} name="cog-outline" size={32}/>
@@ -165,9 +179,12 @@ const IndexScreen = () => {
           <Ionicons style={styles.logoutIcon} name="log-out-outline" size={32} onPress={handleSignout}/>
         </View>
 
+        {/* Displays currMonth */}
         <View style={styles.monthWrapper}>
           <Text style={styles.month}>{getMonth()}</Text>
         </View>
+
+        {/* Displays 2 days before currDate, currDate, and 2 days after currDate */}
         <View style={styles.dateContainer}>
           <TouchableOpacity onPress={() => switchDate(getYesterday())}>
             <Text style={styles.leftArrow}>{leftArrow}</Text>
@@ -202,10 +219,12 @@ const IndexScreen = () => {
           </TouchableOpacity>
         </View>
 
+        {/* Line */}
         <View style={styles.lineWrapper}>
             <View style={styles.line}></View>
         </View>
 
+        {/* Takes user inputs and displays them */}
         <View style={styles.journalWrapper}>
           <View style={styles.journal}>
             <Text style={styles.question}>3 Things I am grateful for: </Text>
@@ -256,6 +275,7 @@ const IndexScreen = () => {
               <TextInput style={styles.input} value={q4a1} onChangeText={text => setQ4a1(text)} />
             </View>
 
+            {/* Save button */}
             <View style={styles.saveWrapper}>
               <TouchableOpacity style={styles.saveButton} onPress={() => handleSave()}>
                 <Text style={styles.saveText}>Save</Text>
