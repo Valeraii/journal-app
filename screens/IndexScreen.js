@@ -1,5 +1,5 @@
 import {useState, React, useEffect, useCallback} from 'react'
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, ImageBackground } from 'react-native';
 import { auth, db } from '../firebase';
 import { useNavigation } from '@react-navigation/core'
 import moment from 'moment';
@@ -29,9 +29,33 @@ const IndexScreen = () => {
   const ref = firebase.firestore().collection(userID)
 
   useEffect(() => {
+    fetchData()
+  }, [])
+
+  useEffect(() => {
+    fetchData()
+  }, [switchDate])
+
+  function switchDate(date) {
+    console.log('here ' + date)
+    let one = 1;
+    if(date > 1 && date < moment().daysInMonth()) {
+      setCurrDate(date)
+    } else if (date === one.toString()) {
+      console.log("one")
+      setCurrDate(one.toString())
+    } else {
+      setCurrDate(moment().daysInMonth().toString())
+    }
+    // if(date === 1 && getNextDate() >= 1) {
+    //   setCurrMonth(moment().add(1, "month").format('MMMM'))
+    // }
+    // if(date === 1 && getYesterday() === moment().daysInMonth() - 1) {
+    //   setCurrMonth(moment().subtract(1, "month").format('MMMM'))
+    // }
+    fetchData()
     console.log(currDate)
-    fetchData();
-  }, [switchDate, fetchData])
+  }
 
   const fetchData = () => {
     console.log('fetching ' + currDate)
@@ -90,44 +114,31 @@ const IndexScreen = () => {
     return currMonth
   }
 
-  function switchDate(date) {
-    console.log('here ' + date)
-    if(date > 0 && date < moment().daysInMonth()) {
-      setCurrDate(date)
-    } else {
-      setCurrDate(moment().daysInMonth())
-    }
-    if(date === 1 && getNextDate() >= 1) {
-      setCurrMonth(moment().add(1, "month").format('MMMM'))
-    }
-    if(date === 1 && getYesterday() === moment().daysInMonth() - 1) {
-      setCurrMonth(moment().subtract(1, "month").format('MMMM'))
-    }
-    fetchData()
-    console.log(currDate)
-  }
-
   function getNextDate() {
-    if(currDate === moment().daysInMonth()) {
-      return 1
+    let one = 1;
+    if(currDate === moment().daysInMonth().toString()) {
+      return one.toString()
     } else {
       return (Number(currDate) + 1).toString()
     }
   }
 
-  function getNextNextDate() {    
+  function getNextNextDate() {   
+    let one = 1;
+    let two = 2;
     if(Number(currDate) + 1 === moment().daysInMonth()) {
-      return 1
+      return one.toString()
     }
     if (Number(currDate) + 2 > moment().daysInMonth()) {
-      return 2
+      return two.toString()
     }
     return (Number(currDate) + 2).toString()
   }
 
   function getYesterday() {
-    if(currDate === 1) {
-      return moment().daysInMonth()
+    let one = 1;
+    if(currDate === one.toString()) {
+      return moment().daysInMonth().toString()
     } else {
       return (Number(currDate) - 1).toString()
     }
@@ -135,16 +146,18 @@ const IndexScreen = () => {
 
   function getYesterdayYesterday() {
     if(Number(currDate) - 1 === 1) {
-      return moment().daysInMonth()
+      return moment().daysInMonth().toString()
     }
     if (Number(currDate) - 2 < 1) {
-      return moment().daysInMonth() - 1
+      return (moment().daysInMonth() - 1).toString()
     }
     return (Number(currDate) - 2).toString()
   }
 
   return (
+    <ScrollView>
     <View style={styles.container}>
+      <ImageBackground style={styles.bg} source={require('../assets/ocean-bg.png')}>
         <View style={styles.header}>
           <TouchableOpacity>
             <Ionicons style={styles.options} name="cog-outline" size={32}/>
@@ -251,8 +264,9 @@ const IndexScreen = () => {
           </View>
 
         </View>
-      
+      </ImageBackground>
     </View>
+    </ScrollView>
   )
 }
 
@@ -263,31 +277,40 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#E8EAED',
   },
+  bg: {
+    resizeMode: 'cover',
+    height: '100vh'
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingTop: 20,
   },
   options: {
     padding: 20,
+    color: 'white'
   },
   logoutIcon: {
     padding: 20,
+    color: 'white',
   },
   monthWrapper: {
-    paddingBottom: 30,
+    paddingBottom: 20,
     alignItems: 'center'
   },
   month: {
-    fontSize: 36,
+    fontFamily: 'notoserif',
+    fontSize: 48,
     fontWeight: 'bold',
+    color: 'white'
   },
   dateContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
   dateWrapper: {
-    width: 60,
-    height: 60,
+    width: 50,
+    height: 50,
     backgroundColor: '#FFF',
     borderRadius: 60,
     /*vertical*/
@@ -299,29 +322,32 @@ const styles = StyleSheet.create({
   },
   leftArrow: {
     marginTop: 20,
-    paddingLeft: 30,
+    paddingLeft: 20,
+    color: 'white'
   },
   rightArrow: {
     marginTop: 20,
-    paddingRight: 30,
+    paddingRight: 20,
   },
   lineWrapper: {
     paddingTop: 30,
     alignItems: 'center',
+    color: 'white'
   },
   line: {
     width:'80%',
-    borderBottomColor: 'black',
+    borderBottomColor: 'white',
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   journalWrapper: {
-    paddingTop: 30,
+    paddingTop: 20,
     alignItems: 'center',
-    paddingBottom: 100
+    paddingBottom: 20
   },
   question: {
-    marginTop: 20,
+    marginTop: 10,
     marginBottom: 10,
+    fontFamily: 'notoserif',
   },
   journal: {
     width: '80%',
@@ -333,20 +359,23 @@ const styles = StyleSheet.create({
     paddingLeft: 50
   },
   journalText: {
-   
   },
   answer: {
     flexDirection: 'row',
   },
   input: {
     width: '90%',
+    fontFamily: 'notoserif',
   },
   bulletIcon: {
     padding: 5,
   },
   saveWrapper: {
-    marginTop: 30,
+    marginTop: 10,
     alignItems: 'center'
+  },
+  date: {
+    fontFamily: 'notoserif',
   },
   saveButton: {
     width: '50%',
