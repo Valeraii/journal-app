@@ -1,4 +1,4 @@
-import {useState, React, useEffect} from 'react'
+import {useState, React, useEffect, useCallback} from 'react'
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import { auth, db } from '../firebase';
 import { useNavigation } from '@react-navigation/core'
@@ -10,7 +10,8 @@ const IndexScreen = () => {
   const navigation = useNavigation()
   const userID = auth.currentUser?.uid
 
-  const [currDate, setCurrDate] = useState('')
+  const [currDate, setCurrDate] = useState(moment().format('D'))
+  const [currMonth, setCurrMonth] = useState(moment().format('MMMM'))
   const [q1a1, setQ1a1] = useState('')
   const [q1a2, setQ1a2] = useState('')
   const [q1a3, setQ1a3] = useState('')
@@ -22,32 +23,44 @@ const IndexScreen = () => {
   const [q3a3, setQ3a3] = useState('')
   const [q4a1, setQ4a1] = useState('')
 
-  let month = moment().format('MMMM')
-  let day = moment().format('D')
-  let day1 = moment().add(1, 'days').format('D')
-  let day2 = moment().add(2, 'days').format('D')
   let leftArrow = '<'
   let rightArrow = '>'
 
   const ref = firebase.firestore().collection(userID)
 
   useEffect(() => {
-    const unsubscribe = ref.get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        setQ1a1(doc.data().q1a1)
-        setQ1a2(doc.data().q1a2)
-        setQ1a3(doc.data().q1a3)
-        setQ2a1(doc.data().q2a1)
-        setQ2a2(doc.data().q2a2)
-        setQ2a3(doc.data().q2a3)
-        setQ3a1(doc.data().q3a1)
-        setQ3a2(doc.data().q3a2)
-        setQ3a3(doc.data().q3a3)
-        setQ4a1(doc.data().q4a1)
-      })
+    console.log(currDate)
+    fetchData();
+  }, [switchDate, fetchData])
+
+  const fetchData = () => {
+    console.log('fetching ' + currDate)
+    ref.doc(currDate).get().then((querySnapshot) => {
+      if(querySnapshot.exists) { 
+        setQ1a1(querySnapshot.data().q1a1)
+        setQ1a2(querySnapshot.data().q1a2)
+        setQ1a3(querySnapshot.data().q1a3)
+        setQ2a1(querySnapshot.data().q2a1)
+        setQ2a2(querySnapshot.data().q2a2)
+        setQ2a3(querySnapshot.data().q2a3)
+        setQ3a1(querySnapshot.data().q3a1)
+        setQ3a2(querySnapshot.data().q3a2)
+        setQ3a3(querySnapshot.data().q3a3)
+        setQ4a1(querySnapshot.data().q4a1)
+      } else {
+        setQ1a1('')
+        setQ1a2('')
+        setQ1a3('')
+        setQ2a1('')
+        setQ2a2('')
+        setQ2a3('')
+        setQ3a1('')
+        setQ3a2('')
+        setQ3a3('')
+        setQ4a1('')
+      }
     })
-    return unsubscribe
-  }, [])
+  }
 
   const handleSignout = () => {
     auth.signOut()
@@ -58,8 +71,8 @@ const IndexScreen = () => {
   }
 
   async function handleSave() {
-    await ref.doc(day).set({
-      date: day,
+    await ref.doc(currDate).set({
+      date: currDate,
       q1a1: q1a1,
       q1a2: q1a2,
       q1a3: q1a3,
@@ -73,44 +86,105 @@ const IndexScreen = () => {
     })
   }
 
+  function getMonth() {
+    return currMonth
+  }
+
+  function switchDate(date) {
+    console.log('here ' + date)
+    if(date > 0 && date < moment().daysInMonth()) {
+      setCurrDate(date)
+    } else {
+      setCurrDate(moment().daysInMonth())
+    }
+    if(date === 1 && getNextDate() >= 1) {
+      setCurrMonth(moment().add(1, "month").format('MMMM'))
+    }
+    if(date === 1 && getYesterday() === moment().daysInMonth() - 1) {
+      setCurrMonth(moment().subtract(1, "month").format('MMMM'))
+    }
+    fetchData()
+    console.log(currDate)
+  }
+
+  function getNextDate() {
+    if(currDate === moment().daysInMonth()) {
+      return 1
+    } else {
+      return (Number(currDate) + 1).toString()
+    }
+  }
+
+  function getNextNextDate() {    
+    if(Number(currDate) + 1 === moment().daysInMonth()) {
+      return 1
+    }
+    if (Number(currDate) + 2 > moment().daysInMonth()) {
+      return 2
+    }
+    return (Number(currDate) + 2).toString()
+  }
+
+  function getYesterday() {
+    if(currDate === 1) {
+      return moment().daysInMonth()
+    } else {
+      return (Number(currDate) - 1).toString()
+    }
+  }
+
+  function getYesterdayYesterday() {
+    if(Number(currDate) - 1 === 1) {
+      return moment().daysInMonth()
+    }
+    if (Number(currDate) - 2 < 1) {
+      return moment().daysInMonth() - 1
+    }
+    return (Number(currDate) - 2).toString()
+  }
+
   return (
     <View style={styles.container}>
-        <TouchableOpacity>
-          <Ionicons style={styles.options} name="cog-outline" size={32}/>
-        </TouchableOpacity>
+        <View style={styles.header}>
+          <TouchableOpacity>
+            <Ionicons style={styles.options} name="cog-outline" size={32}/>
+          </TouchableOpacity>
+          <Ionicons style={styles.logoutIcon} name="log-out-outline" size={32} onPress={handleSignout}/>
+        </View>
+
         <View style={styles.monthWrapper}>
-          <Text style={styles.month}>{month}</Text>
+          <Text style={styles.month}>{getMonth()}</Text>
         </View>
         <View style={styles.dateContainer}>
-          <TouchableOpacity >
+          <TouchableOpacity onPress={() => switchDate(getYesterday())}>
             <Text style={styles.leftArrow}>{leftArrow}</Text>
           </TouchableOpacity>
-          <TouchableOpacity >
+          <TouchableOpacity onPress={() => switchDate(getYesterdayYesterday())}>
             <View style={styles.dateWrapper}>
-              <Text style={styles.date}>{day -2}</Text>
+              <Text style={styles.date}>{getYesterdayYesterday()}</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity >
+          <TouchableOpacity onPress={() => switchDate(getYesterday())}>
             <View style={styles.dateWrapper}>
-              <Text style={styles.date}>{day - 1}</Text>
+              <Text style={styles.date}>{getYesterday()}</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity >
+          <TouchableOpacity  onPress={() => switchDate(currDate)}>
             <View style={styles.dateWrapper}>
-              <Text style={styles.date}>{day}</Text>
+              <Text style={styles.date}>{currDate}</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity >
+          <TouchableOpacity onPress={() => switchDate(getNextDate())}>
             <View style={styles.dateWrapper}>
-              <Text style={styles.date}>{day1}</Text>
+              <Text style={styles.date}>{getNextDate()}</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity >
+          <TouchableOpacity  onPress={() => switchDate(getNextNextDate())}>
             <View style={styles.dateWrapper}>
-              <Text style={styles.date}>{day2}</Text>
+              <Text style={styles.date}>{getNextNextDate()}</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity >
+          <TouchableOpacity onPress={() => switchDate(getNextDate())}>
             <Text style={styles.rightArrow}>{rightArrow}</Text>
           </TouchableOpacity>
         </View>
@@ -178,11 +252,6 @@ const IndexScreen = () => {
 
         </View>
       
-        <TouchableOpacity
-          onPress={handleSignout}
-          style={styles.button}>
-          <Text style={styles.buttonText}>Sign out</Text>
-        </TouchableOpacity>
     </View>
   )
 }
@@ -194,7 +263,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#E8EAED',
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   options: {
+    padding: 20,
+  },
+  logoutIcon: {
     padding: 20,
   },
   monthWrapper: {
@@ -241,6 +317,7 @@ const styles = StyleSheet.create({
   journalWrapper: {
     paddingTop: 30,
     alignItems: 'center',
+    paddingBottom: 100
   },
   question: {
     marginTop: 20,
@@ -282,19 +359,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 16
   },
-  button: {
-    backgroundColor: '#0783F9',
-    width: '60%',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 40,
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: '700',
-    fontSize: 16
-  }
 })
 
 
