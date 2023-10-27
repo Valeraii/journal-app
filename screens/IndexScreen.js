@@ -39,24 +39,66 @@ const IndexScreen = () => {
   {/* Constantly checks if current date has been updated */}
   useEffect(() => {
     fetchData()
-  }, [switchDate])
+  }, [currDate])
+
+  {/* Get month in number form */}
+  let month = '';
+  switch(currMonth.toString()) {
+    case 'January':
+      month = '0' + 1;
+      break;
+    case 'February':
+      month = '0' + 2;
+      break;
+    case 'March':
+      month = '0' + 3;
+      break;
+    case 'April':
+      month = '0' + 4;
+      break;
+    case 'May':
+      month = '0' + 5;
+      break;
+    case 'June':
+      month = '0' + 6;
+      break;
+      case 'July':
+    month = '0' + 7;
+    break;
+  case 'August':
+    month = '0' + 8;
+    break;
+  case 'September':
+    month = '0' + 9;
+    break;
+  case 'October':
+    month = 10;
+    break;
+  case 'November':
+      month = 11;
+      break;
+  case 'December':
+    month = 12;
+    break;
+  }
 
   {/* Reassigns currDate depending on which date the user clicks */}
   function switchDate(date) {
-    let one = 1;
+    month = moment().year().toString() + '-' + month
     if(date > 1 && date < moment().daysInMonth()) {
       setCurrDate(date)
-    } else if (date === one.toString()) {
-      setCurrDate(one.toString())
+    } else if (date === '1') {
+      setCurrDate('1')
     } else {
       setCurrDate(moment().daysInMonth().toString())
     }
-    // if(date === 1 && getNextDate() >= 1) {
-    //   setCurrMonth(moment().add(1, "month").format('MMMM'))
-    // }
-    // if(date === 1 && getYesterday() === moment().daysInMonth() - 1) {
-    //   setCurrMonth(moment().subtract(1, "month").format('MMMM'))
-    // }
+    {/* Cycle months */}
+    if((currDate === moment().daysInMonth().toString() || currDate === (moment().daysInMonth() - 1).toString()) && (date === '1' || date === '2')) {
+      setCurrMonth(moment(month).add(1, "month").format('MMMM'))
+    }
+    if((currDate === '1' || currDate === '2') && (date === moment().daysInMonth().toString() || date === (moment().daysInMonth() - 1).toString())) {
+      setCurrMonth(moment(month).subtract(1, "month").format('MMMM'))
+    }
     fetchData()
   }
 
@@ -170,7 +212,7 @@ const IndexScreen = () => {
     <ScrollView>
     <View style={styles.container}>
       {/* Background image */}
-      <ImageBackground style={styles.bg} source={require('../assets/ocean-bg.png')}>
+      <ImageBackground style={styles.bg} source={require('../assets/bg.jpg')}>
         {/* Header containing signout and options */}
         <View style={styles.header}>
           <TouchableOpacity>
@@ -308,11 +350,9 @@ const styles = StyleSheet.create({
   },
   options: {
     padding: 20,
-    color: 'white'
   },
   logoutIcon: {
     padding: 20,
-    color: 'white',
   },
   monthWrapper: {
     paddingBottom: 20,
@@ -322,7 +362,6 @@ const styles = StyleSheet.create({
     fontFamily: 'notoserif',
     fontSize: 48,
     fontWeight: 'bold',
-    color: 'white'
   },
   dateContainer: {
     flexDirection: 'row',
@@ -337,26 +376,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     /*horizontal*/
     alignItems: 'center',
-    borderColor: '#C0C0C0',
+    borderColor: 'black',
     borderWidth: 1,
   },
   leftArrow: {
-    marginTop: 20,
+    marginTop: 5,
     paddingLeft: 20,
-    color: 'white'
+    fontSize: 28,
   },
   rightArrow: {
-    marginTop: 20,
+    marginTop: 5,
     paddingRight: 20,
+    fontSize: 28,
   },
   lineWrapper: {
     paddingTop: 30,
     alignItems: 'center',
-    color: 'white'
   },
   line: {
     width:'80%',
-    borderBottomColor: 'white',
+    borderBottomColor: 'black',
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   journalWrapper: {

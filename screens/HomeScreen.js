@@ -37,7 +37,8 @@ const HomeScreen = () => {
     return (
         <View style={styles.container}>
           {/* Background */}
-          <ImageBackground style={styles.bg} source={require('../assets/ocean-bg.png')}>
+          {/* href="https://www.vecteezy.com/free-photos">Free Stock photos by Vecteezy */}
+          <ImageBackground style={styles.bg} source={require('../assets/bg.jpg')}>
         
             {/*Title and logo */}
             <View style={styles.logoWrapper}>
@@ -100,12 +101,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         paddingBottom: 20,
         fontFamily: 'notoserif',
-        color: 'white'
+        color: ''
       },
       circular: {
         width: 200,
         height: 200,
-        borderColor: '#C0C0C0',
+        borderColor: 'black',
         borderWidth: 2,
         borderRadius: 100,
         marginTop: 10,
