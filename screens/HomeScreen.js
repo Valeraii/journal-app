@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/core'
 import {useState, react, useEffect} from "react";
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ImageBackground } from 'react-native';
+import { StyleSheet, StatusBar, SafeAreaView, Text, View, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ImageBackground } from 'react-native';
 import {auth} from "../firebase"
 import { Image } from 'react-native';
 
@@ -31,11 +31,11 @@ const HomeScreen = () => {
             .then(userCredentials => {
                 const user = userCredentials.user;
             })
-            .catch(error => alert(error.message))
+            .catch(error => alert("Email or password is incorrect"))
     }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
           {/* Background */}
           {/* href="https://www.vecteezy.com/free-photos">Free Stock photos by Vecteezy */}
           <ImageBackground style={styles.bg} source={require('../assets/bg.jpg')}>
@@ -73,9 +73,11 @@ const HomeScreen = () => {
                 <Text style={styles.signup}>SIGN UP</Text>
               </TouchableOpacity>
             </View>
-
+        <StatusBar translucent backgroundColor='transparent' />
         </ImageBackground>
-      </View>
+    
+      </SafeAreaView>
+      
     )
 }
 
@@ -87,8 +89,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#E8EAED',
       },
       bg: {
+        flex: 1,
         resizeMode: 'cover',
-        height: '100vh'
+        justifyContent: 'center',
+        height: '100%'
       },
       logoWrapper: {
         paddingTop: 150,

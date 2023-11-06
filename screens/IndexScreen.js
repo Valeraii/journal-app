@@ -16,7 +16,6 @@ const IndexScreen = () => {
   const [currDate, setCurrDate] = useState(moment().format('D'))
   const [currMonth, setCurrMonth] = useState(moment().format('MMMM'))
   const [highestStreak, setHighestStreak] = useState()
-  const [currentStreak, setCurrentStreak] = useState()
 
   const [modalVisible, setModalVisible] = useState(false)
 
@@ -254,6 +253,14 @@ const IndexScreen = () => {
             >
               <Text style={styles.close}>x</Text>
             </Pressable>
+            <View style={styles.accountWrapper}>
+              <View style={styles.email}>
+                <Text style={styles.modalText}> Email: {auth.currentUser?.email}</Text>
+              </View>
+              <View style={styles.password}>
+                <Text style={styles.modalText}> Password: ********</Text>
+              </View>
+            </View>
             <Text style={styles.modalText}> Longest Streak: {highestStreak}</Text>
 
           </View>
@@ -265,7 +272,7 @@ const IndexScreen = () => {
         {/* Header containing signout and options */}
         <View style={styles.header}>
           <TouchableOpacity>
-            <Ionicons style={styles.options} name="cog-outline" size={32} onPress={() => {setModalVisible(true); getHighestStreak(); getCurrentStreak()}}/>
+            <Ionicons style={styles.options} name="cog-outline" size={32} onPress={() => {setModalVisible(true); getHighestStreak()}}/>
           </TouchableOpacity>
           <Ionicons style={styles.logoutIcon} name="log-out-outline" size={32} onPress={handleSignout}/>
         </View>
@@ -395,16 +402,41 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingTop: 20,
+    paddingTop: 15,
   },
   options: {
-    padding: 20,
+    paddingLeft: 15,
   },
   logoutIcon: {
-    padding: 20,
+    paddingRight: 15,
+  },
+  accountWrapper: {
+    flexDirection: 'column',
+  },
+  email: {
+    flexDirection: 'row',
+    alignItems: 'center', 
+    paddingTop: 35
+  },
+  password: {
+    flexDirection: 'row',
+    alignItems: 'center', 
+  },
+  editButton: {
+    borderRadius: 10,
+    borderWidth: 1,
+    marginRight: 20,
+    marginLeft: 'auto'
+  },
+  text: {
+    fontWeight: 'bold'
+  },
+  buttonText: {
+    fontWeight: 'bold',
+    padding: 5
   },
   monthWrapper: {
-    paddingBottom: 20,
+    paddingBottom: 10,
     alignItems: 'center'
   },
   month: {
@@ -512,10 +544,8 @@ const styles = StyleSheet.create({
     width: '60vw'
   },
   modalText: {
-    paddingLeft: 15,
-    paddingTop: 15,
     fontWeight: 'bold',
-   
+    padding: 15
   },
   close:{
     paddingRight: 15,

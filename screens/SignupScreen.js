@@ -44,7 +44,7 @@ function SignupScreen() {
 
             {/* Displays page name */}
             <View style={styles.titleWrapper}>
-                <Text style={styles.title}>Sign Up</Text>
+                <Text style={styles.title}>Create Account</Text>
             </View>
 
             {/* Takes name, email and password inputs */}
@@ -83,11 +83,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#E8EAED',
     },
     bg: {
+        flex: 1,
         resizeMode: 'cover',
+    
         height: '100vh'
     },
     backIcon : {
-        padding: 20,
+        paddingLeft: 20,
+        paddingTop: 40
     },
     titleWrapper: {
         paddingTop: 150,
@@ -145,5 +148,6 @@ const styles = StyleSheet.create({
         borderColor: '#C0C0C0',
         borderWidth: 1,
         marginBottom: 15,
+        marginTop: 15
     },
 })
